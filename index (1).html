@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Random Walk → Moto Browniano</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body { font-family: Arial; text-align: center; }
+    canvas { margin-top: 20px; }
+  </style>
+
+</head>
+
+<body>
+
+<h2>Random Walk scalata → Moto Browniano</h2>
+
+<label>n (numero passi): </label> <input type="number" id="nInput" placeholder="Inserisci n">
+
+<button id="btn">Simula</button>
+
+<!-- 🔥 dimensioni fissate -->
+
+<canvas id="chart" width="800" height="400"></canvas>
+
+<script>
+let chart = null;
+
+function rademacher() {
+  return Math.random() < 0.5 ? -1 : 1;
+}
+
+function simulate() {
+  let n = parseInt(document.getElementById("nInput").value);
+
+  // controllo input
+  if (!n || n <= 0) {
+    alert("Inserisci un numero valido!");
+    return;
+  }
+
+  let S = 0;
+  let data = [];
+  let labels = [];
+
+  for (let k = 0; k <= n; k++) {
+    if (k > 0) S += rademacher();
+
+    let X = S / Math.sqrt(n);
+    data.push(X);
+    labels.push(k);
+  }
+
+  const canvas = document.getElementById("chart");
+
+  // 🔥 FIX: reset dimensioni ogni volta
+  canvas.width = 800;
+  canvas.height = 400;
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(canvas, {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "Random Walk scalata",
+        data: data,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: false,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          title: { display: true, text: "Tempo (k)" }
+        },
+        y: {
+          title: { display: true, text: "X_n(t)" }
+        }
+      }
+    }
+  });
+}
+
+// evento bottone
+document.getElementById("btn").addEventListener("click", simulate);
+</script>
+
+</body>
+</html>
